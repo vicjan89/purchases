@@ -5,10 +5,10 @@ from tkinter import filedialog as fd
 
 root = Tk()
 scrollbar = Scrollbar(root)
-item_source = Listbox(yscrollcommand=scrollbar.set, width=80, selectmode=EXTENDED)
-item_project = Listbox(yscrollcommand=scrollbar.set, width=80, selectmode=EXTENDED)
-num = Listbox(yscrollcommand=scrollbar.set, width=7)
-note = Listbox(yscrollcommand=scrollbar.set, width=30)
+item_source = Listbox(yscrollcommand=scrollbar.set, width=80, selectmode=EXTENDED, exportselection=0)
+item_project = Listbox(yscrollcommand=scrollbar.set, width=80, selectmode=EXTENDED, exportselection=0)
+num = Listbox(yscrollcommand=scrollbar.set, width=7, exportselection=0)
+note = Listbox(yscrollcommand=scrollbar.set, width=30, exportselection=0)
 prefix_file_to_save=''
 
 def add(event):
@@ -71,7 +71,6 @@ def save_file(event):
     prefix_file_to_save = ''
     root.title(file_name)
     s = zip(item_project.get(0,END),num.get(0,END),note.get(0,END))
-    print(s)
     with open(file_name, "w", newline="", encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerows(s)
@@ -130,7 +129,7 @@ def group_projects():
     directory = r'C:\Users\Виктор\PycharmProjects\purchases'
     files = os.listdir(directory)
     for f in files:
-        if f[-4:]=='.csv' and f[0:1]!='gp':
+        if f[-4:]=='.csv' and f[-6:-4]!='gp' and f[0:3]!='ТМЦ':
             f=f[0:-4]
             item_source.insert(END,f)
 
@@ -158,6 +157,35 @@ def group_projects():
     note.pack(side=LEFT, fill=BOTH, expand=True)
     scrollbar.config(command=note.yview)
 
+def view_sum(event):
+    file_name = item_source.curselection()
+    progects=[]
+    items=[]
+    sum_items=[]
+    with open(item_source.get(file_name[0])+'gp.csv', "r", newline="", encoding='utf-8') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            progects.append(row)
+    with open('ТМЦ.csv', 'r', newline="", encoding='utf-8') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            items.append(row[0])
+    for prg in progects:
+        with open(prg[0]+'.csv', 'r', newline="", encoding='utf-8') as file:
+            reader=csv.reader(file)
+            for row in reader:
+                if row[0] in sum_items:
+                    i=sum_items.index(row[0])
+                    print(i)
+                    sum_items[i][1]+=1
+                else:
+                    sum_items.append(row)
+    for s in sum_items:
+        print(s)
+        item_project.insert(END, s[0])
+        num.insert(END, s[1])
+
+
 def sum_group_projects():
     root.title("Сводная спецификация группы проектов")
     item_source.delete(0, END)
@@ -174,7 +202,7 @@ def sum_group_projects():
 
     scrollbar.pack(side=RIGHT, fill=Y)
 
-    item_source.bind('<space>', add)
+    item_source.bind('<space>', view_sum)
     root.bind('o', open_file)
     root.bind('s', save_file)
 
