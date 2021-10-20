@@ -2,14 +2,7 @@ import csv
 import os
 from tkinter import *
 from tkinter import filedialog as fd
-
-root = Tk()
-scrollbar = Scrollbar(root)
-item_source = Listbox(yscrollcommand=scrollbar.set, width=80, selectmode=EXTENDED, exportselection=0)
-item_project = Listbox(yscrollcommand=scrollbar.set, width=80, selectmode=EXTENDED, exportselection=0)
-num = Listbox(yscrollcommand=scrollbar.set, width=7, exportselection=0)
-note = Listbox(yscrollcommand=scrollbar.set, width=30, exportselection=0)
-prefix_file_to_save=''
+from tkinter import ttk
 
 def add(event):
     ind=item_source.curselection()
@@ -80,82 +73,7 @@ def save_group(event):
     prefix_file_to_save='gp'
     save_file(event)
 
-def project():
 
-    root.title("Формирование спецификации проекта")
-
-    item_source.delete(0,END)
-    item_project.delete(0,END)
-    num.delete(0,END)
-    note.delete(0,END)
-    FILENAME = r'C:\Users\Виктор\PycharmProjects\purchases\ТМЦ.csv'
-    with open(FILENAME, "r", newline="", encoding='utf-8') as file:
-        reader = csv.reader(file)
-        for row in reader:
-            item_source.insert(END, row[0])
-
-    scrollbar.pack(side=RIGHT, fill=Y)
-
-    item_source.bind('<space>', add)
-    item_source.bind('+', change_num_item_project)
-    item_source.bind('-', change_num_item_project)
-    item_source.bind('*', change_num_item_project)
-    item_source.bind('/', change_num_item_project)
-    item_project.bind('<Delete>', del_item_project)
-    item_project.bind('+', change_num_item_project)
-    item_project.bind('-', change_num_item_project)
-    item_project.bind('*', change_num_item_project)
-    item_project.bind('/', change_num_item_project)
-    root.bind('o', open_file)
-    root.bind('s', save_file)
-
-    item_source.pack(side=LEFT, fill=BOTH, expand=True)
-    scrollbar.config(command=item_source.yview)
-    item_project.pack(side=LEFT, fill=BOTH, expand=True)
-    scrollbar.config(command=item_project.yview)
-    num.pack(side=LEFT, fill=BOTH, expand=True)
-    scrollbar.config(command=num.yview)
-    note.pack(side=LEFT, fill=BOTH, expand=True)
-    scrollbar.config(command=note.yview)
-
-def group_projects():
-
-    root.title("Формирование группы проектов")
-    item_source.delete(0,END)
-    item_project.delete(0,END)
-    num.delete(0,END)
-    note.delete(0,END)
-
-    directory = r'C:\Users\Виктор\PycharmProjects\purchases'
-    files = os.listdir(directory)
-    for f in files:
-        if f[-4:]=='.csv' and f[-6:-4]!='gp' and f[0:3]!='ТМЦ':
-            f=f[0:-4]
-            item_source.insert(END,f)
-
-    scrollbar.pack(side=RIGHT, fill=Y)
-
-    item_source.bind('<space>', add)
-    item_source.bind('+', change_num_item_project)
-    item_source.bind('-', change_num_item_project)
-    item_source.bind('*', change_num_item_project)
-    item_source.bind('/', change_num_item_project)
-    item_project.bind('<Delete>', del_item_project)
-    item_project.bind('+', change_num_item_project)
-    item_project.bind('-', change_num_item_project)
-    item_project.bind('*', change_num_item_project)
-    item_project.bind('/', change_num_item_project)
-    root.bind('o', open_file)
-    root.bind('s', save_group)
-
-    item_source.pack(side=LEFT, fill=BOTH, expand=True)
-    scrollbar.config(command=item_source.yview)
-    item_project.pack(side=LEFT, fill=BOTH, expand=True)
-    scrollbar.config(command=item_project.yview)
-    num.pack(side=LEFT, fill=BOTH, expand=True)
-    scrollbar.config(command=num.yview)
-    note.pack(side=LEFT, fill=BOTH, expand=True)
-    scrollbar.config(command=note.yview)
 
 def view_sum(event):
     file_name = item_source.curselection()
@@ -215,13 +133,81 @@ def sum_group_projects():
     note.pack(side=LEFT, fill=BOTH, expand=True)
     scrollbar.config(command=note.yview)
 
+root = Tk()
+style = ttk.Style()
+style.configure("BW.TLabel", foreground="black", background="white")
+
+note = ttk.Notebook(root)
+
+f_prg = ttk.Frame(note)
+note.add(f_prg, text = 'Спецификации проектов')
+scrollbar = Scrollbar(f_prg)
+item_source = Listbox(f_prg, yscrollcommand=scrollbar.set, width=80, selectmode=EXTENDED, exportselection=0)
+item_project = Listbox(f_prg, yscrollcommand=scrollbar.set, width=80, selectmode=EXTENDED, exportselection=0)
+note.pack(side = 'left', fill = 'both')
+FILENAME = r'C:\Users\Виктор\PycharmProjects\purchases\ТМЦ.csv'
+with open(FILENAME, "r", newline="", encoding='utf-8') as file:
+     reader = csv.reader(file)
+     for row in reader:
+         item_source.insert(END, row[0])
+
+scrollbar.pack(side=RIGHT, fill=Y)
+
+item_source.bind('<space>', add)
+item_source.bind('+', change_num_item_project)
+item_source.bind('-', change_num_item_project)
+item_source.bind('*', change_num_item_project)
+item_source.bind('/', change_num_item_project)
+item_project.bind('<Delete>', del_item_project)
+item_project.bind('+', change_num_item_project)
+item_project.bind('-', change_num_item_project)
+item_project.bind('*', change_num_item_project)
+item_project.bind('/', change_num_item_project)
+root.bind('o', open_file)
+root.bind('s', save_file)
+
+item_source.pack(side=LEFT, fill=BOTH, expand=True)
+scrollbar.config(command=item_source.yview)
+item_project.pack(side=LEFT, fill=BOTH, expand=True)
+scrollbar.config(command=item_project.yview)
+
+f_gp = ttk.Frame(note)
+note.add(f_gp, text = 'Группы проектов')
+directory = r'C:\Users\Виктор\PycharmProjects\purchases'
+files = os.listdir(directory)
+for f in files:
+    if f[-4:]=='.csv' and f[-6:-4]!='gp' and f[0:3]!='ТМЦ':
+         f=f[0:-4]
+         item_source.insert(END,f)
+
+scrollbar = Scrollbar(f_gp)
+prg_source = Listbox(f_gp, yscrollcommand=scrollbar.set, width=80, selectmode=EXTENDED, exportselection=0)
+prg_to_group = Listbox(f_gp, yscrollcommand=scrollbar.set, width=80, selectmode=EXTENDED, exportselection=0)
+scrollbar.pack(side=RIGHT, fill=Y)
+
+prg_source.bind('<space>', add)
+prg_source.bind('+', change_num_item_project)
+prg_source.bind('-', change_num_item_project)
+prg_source.bind('*', change_num_item_project)
+prg_source.bind('/', change_num_item_project)
+item_project.bind('<Delete>', del_item_project)
+item_project.bind('+', change_num_item_project)
+item_project.bind('-', change_num_item_project)
+item_project.bind('*', change_num_item_project)
+item_project.bind('/', change_num_item_project)
+root.bind('o', open_file)
+root.bind('s', save_group)
+
+item_source.pack(side=LEFT, fill=BOTH, expand=True)
+scrollbar.config(command=item_source.yview)
+item_project.pack(side=LEFT, fill=BOTH, expand=True)
+scrollbar.config(command=item_project.yview)
+
+f_sumgp = ttk.Frame(note)
+note.add(f_sumgp, text = 'Сумма аппаратуры для группы')
+
+prefix_file_to_save=''
+
 root.title("Управление закупками")
 root.geometry("1300x700+0+0")
-
-main_menu = Menu()
-main_menu.add_cascade(label="Проекты", command=project)
-main_menu.add_cascade(label="Группы проектов", command=group_projects)
-main_menu.add_cascade(label="Спецификация группы объектов", command=sum_group_projects)
-root.config(menu=main_menu)
-
 root.mainloop()
