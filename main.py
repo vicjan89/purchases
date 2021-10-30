@@ -25,9 +25,29 @@ def set_item(event):
         prefix = ' шт.'
     tree.item(num_edit, text = data[num_edit][2]+'\t'+data[num_edit][3]+prefix+'\t'+data[num_edit][4])
 
+def save():
+    FILENAME1 = r'C:\Users\Виктор\PycharmProjects\purchases\Закупки.csv'
+    with open(FILENAME1, "w", newline="", encoding='utf-8') as file1:
+        writer1 = csv.writer(file1)
+        writer1.writerows(data)
+
+def edit():
+    pass
+
+def myhelp():
+    pass
+
 root = Tk()
 root.title("Управление закупками")
 root.geometry("1300x700+0+0")
+
+main_menu = Menu(root)
+menu_file = Menu(main_menu, tearoff = 0)
+menu_file.add_command(label = "Сохранить Ctrl+S", command = save)
+main_menu.add_cascade(label="Файл", menu = menu_file)
+main_menu.add_command(label="Правка")
+main_menu.add_command(label="Помощь")
+root.config(menu=main_menu)
 
 # configure the grid layout
 root.rowconfigure(0, weight=1)
