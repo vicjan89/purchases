@@ -3,11 +3,13 @@ import os
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk
+from Levenshtein import ratio
 
 i = 0
 num_edit = 0
 FILENAME = r'C:\Users\Виктор\PycharmProjects\purchases\Закупки.csv'
 FILENAME_S = r'C:\Users\Виктор\PycharmProjects\purchases\ТМЦ.csv'
+FILENAME_M = 'Остатки ТМЦ.csv'
 
 def edit_item(event):
     num_edit = int(tree.selection()[0])
@@ -40,9 +42,37 @@ def insert():
     data.append([p, i, 'new', 1, ''])
     tree.selection_set(iid)
 
-
 def myhelp():
     pass
+
+def juxtapose():
+    with open(FILENAME_M, 'r', encoding='cp1251') as file:
+        material = []
+        reader = csv.reader(file, delimiter = ";")
+        for row in reader:
+            material.append(row)
+    for i, m in enumerate(material):
+        equa = []
+        for s in item_source:
+            equa.append(ratio(s, m[3]))
+        ma = max(equa)
+        if ma >0.5:
+            material[i].append(item_source[equa.index(ma)])
+        else:
+            material[i].append('')
+    jux = Tk()
+    jux.title('Сопоставление материалов из базы и остатков ТМЦ')
+    jux.geometry('1000x500+20+20')
+    table = ttk.Treeview(jux, show='headings', columns=("#1", "#2"))
+    table.heading("#1", text="Остатки ТМЦ")
+    table.heading("#2", text="Материал из базы")
+    ysb = ttk.Scrollbar(orient=tk.VERTICAL, command=table.yview)
+    table.configure(yscroll=ysb.set)
+    for m in material:
+        table.insert('', tk.END, values=(m[3], m[13]))
+    table.pack(expand=True, fill=BOTH, side=LEFT)
+    ysb.pack(expand=True, fill=Y, side=RIGHT)
+    jux.mainloop()
 
 root = Tk()
 root.title("Управление закупками")
@@ -51,6 +81,7 @@ root.geometry("1300x300+0+0")
 main_menu = Menu(root)
 menu_file = Menu(main_menu, tearoff = 0)
 menu_file.add_command(label = "Сохранить", command = save)
+menu_file.add_command(label = "Сопоставить с остатками", command = juxtapose)
 main_menu.add_cascade(label="Файл", menu = menu_file)
 menu_edit = Menu(main_menu, tearoff = 0)
 menu_edit.add_command(label = "Вставить", command = insert)
@@ -101,5 +132,5 @@ with open(FILENAME_S, "r", newline="", encoding='utf-8') as file:
     for row in reader:
         item_source.append(row[0])
 edit_text['values'] = item_source
-print(data)
+
 root.mainloop()
