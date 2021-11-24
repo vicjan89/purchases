@@ -45,6 +45,9 @@ def insert():
 def myhelp():
     pass
 
+def set_source(event):
+    pass
+
 def juxtapose():
     with open(FILENAME_M, 'r', encoding='cp1251') as file:
         material = []
@@ -58,21 +61,30 @@ def juxtapose():
         ma = max(equa)
         if ma >0.5:
             material[i].append(item_source[equa.index(ma)])
+            material[i].append('')
         else:
+            material[i].append('')
             material[i].append('')
     jux = Tk()
     jux.title('Сопоставление материалов из базы и остатков ТМЦ')
     jux.geometry('1000x500+20+20')
-    table = ttk.Treeview(jux, show='headings', columns=("#1", "#2"))
+    table = ttk.Treeview(jux, show='headings', columns=("#1", "#2", '#3'))
     table.heading("#1", text="Остатки ТМЦ")
-    table.heading("#2", text="Материал из базы")
+    table.heading("#2", text="Проверено")
+    table.heading("#3", text="Материал из базы")
     ysb = ttk.Scrollbar(orient=tk.VERTICAL, command=table.yview)
     table.configure(yscroll=ysb.set)
     for m in material:
-        table.insert('', tk.END, values=(m[3], m[13]))
+        table.insert('', tk.END, values=(m[3], m[14], m[13]))
     table.pack(expand=True, fill=BOTH, side=LEFT)
     ysb.pack(expand=True, fill=Y, side=RIGHT)
+    table.bind('<space>',set_equal)
+    table.bind('<Return>',set_source)
     jux.mainloop()
+
+def set_equal(event):
+    s = jux.selection()
+    print(s)
 
 root = Tk()
 root.title("Управление закупками")
@@ -89,11 +101,9 @@ main_menu.add_cascade(label="Правка", menu = menu_edit)
 main_menu.add_command(label="Помощь", command = myhelp)
 root.config(menu=main_menu)
 
-# configure the grid layout
 root.rowconfigure(0, weight=1)
 root.columnconfigure(0, weight=1)
 
-# create a treeview
 tree = ttk.Treeview(root)
 tree.heading('#0', text='Группы проектов', anchor='w')
 
